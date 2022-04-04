@@ -3,8 +3,8 @@ from enum import Enum
 from typing import Union
 
 
-# mean earth radius - https://en.wikipedia.org/wiki/Earth_radius#Mean_radius
-_AVG_EARTH_RADIUS_KM = 6371.0088
+# mean moon radius - https://en.wikipedia.org/wiki/moon_radius#Mean_radius
+_AVG_MOON_RADIUS_KM = 1737.4
 
 
 class Unit(Enum):
@@ -50,18 +50,18 @@ _CONVERSIONS = {
     Unit.NAUTICAL_MILES:   0.539956803,
     Unit.FEET:             3280.839895013,
     Unit.INCHES:           39370.078740158,
-    Unit.RADIANS:          1/_AVG_EARTH_RADIUS_KM,
-    Unit.DEGREES:          (1/_AVG_EARTH_RADIUS_KM)*(180.0/pi)
+    Unit.RADIANS:          1/_AVG_MOON_RADIUS_KM,
+    Unit.DEGREES:          (1/_AVG_MOON_RADIUS_KM)*(180.0/pi)
 }
 
 
-def get_avg_earth_radius(unit):
+def get_avg_moon_radius(unit):
     unit = Unit(unit)
-    return _AVG_EARTH_RADIUS_KM * _CONVERSIONS[unit]
+    return _AVG_MOON_RADIUS_KM * _CONVERSIONS[unit]
 
 
 def haversine(point1, point2, unit=Unit.KILOMETERS):
-    """ Calculate the great-circle distance between two points on the Earth surface.
+    """ Calculate the great-circle distance between two points on the moon surface.
 
     Takes two 2-tuples, containing the latitude and longitude of each point in decimal degrees,
     and, optionally, a unit of length.
@@ -99,7 +99,7 @@ def haversine(point1, point2, unit=Unit.KILOMETERS):
     lng = lng2 - lng1
     d = sin(lat * 0.5) ** 2 + cos(lat1) * cos(lat2) * sin(lng * 0.5) ** 2
 
-    return 2 * get_avg_earth_radius(unit) * asin(sqrt(d))
+    return 2 * get_avg_moon_radius(unit) * asin(sqrt(d))
 
 
 def haversine_vector(array1, array2, unit=Unit.KILOMETERS, comb=False):
@@ -156,7 +156,7 @@ def haversine_vector(array1, array2, unit=Unit.KILOMETERS, comb=False):
     d = (numpy.sin(lat * 0.5) ** 2
          + numpy.cos(lat1) * numpy.cos(lat2) * numpy.sin(lng * 0.5) ** 2)
 
-    return 2 * get_avg_earth_radius(unit) * numpy.arcsin(numpy.sqrt(d))
+    return 2 * get_avg_moon_radius(unit) * numpy.arcsin(numpy.sqrt(d))
 
 
 def inverse_haversine(point, distance, direction: Union[Direction, float], unit=Unit.KILOMETERS):
@@ -164,7 +164,7 @@ def inverse_haversine(point, distance, direction: Union[Direction, float], unit=
     lat, lng = point
     lat, lng = map(radians, (lat, lng))
     d = distance
-    r = get_avg_earth_radius(unit)
+    r = get_avg_moon_radius(unit)
     brng = direction.value if isinstance(direction, Direction) else direction
 
     return_lat = asin(sin(lat) * cos(d / r) + cos(lat) * sin(d / r) * cos(brng))
